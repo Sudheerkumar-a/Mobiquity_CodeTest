@@ -1,23 +1,39 @@
-package com.ziraff.hrcursor.ui.Attendance
+package com.mobiquity.codetest.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mobiquity.codetest.R
+import com.mobiquity.codetest.activities.CityDetailsActivity
 import com.mobiquity.codetest.database.CitiesInfo
 import kotlinx.android.synthetic.main.list_item_cities.view.*
 
 
-class CitiesListAdapter(private val mContext: Context, private val cities: List<CitiesInfo>) :
+class CitiesListAdapter(
+    private val mContext: Context,
+    private val cities: List<CitiesInfo>,
+    private val adapterListener: AdapterListener
+) :
     RecyclerView.Adapter<CitiesListAdapter.MyView>() {
 
     inner class MyView(view: View) : RecyclerView.ViewHolder(view) {
         fun bindItems(context: Context, data: CitiesInfo) {
             run {
+                itemView.setOnClickListener(View.OnClickListener {
+                    var intent = Intent(context, CityDetailsActivity::class.java);
+                    intent.putExtra("city", data.cityName)
+                    intent.putExtra("lat", data.latitude)
+                    intent.putExtra("lang", data.longitude)
+                    context.startActivity(intent)
+                })
                 itemView.title.text = data.cityName
                 itemView.address.text = data.cityAddress
+                itemView.imgDelete.setOnClickListener(View.OnClickListener {
+                    adapterListener.onDelete(data)
+                })
             }
         }
 
@@ -61,4 +77,7 @@ class CitiesListAdapter(private val mContext: Context, private val cities: List<
         return cities.size
     }
 
+    interface AdapterListener {
+        fun onDelete(citiesInfo: CitiesInfo);
+    }
 }
